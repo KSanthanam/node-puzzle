@@ -5,7 +5,10 @@
 var fs = require('fs');
 var _ = require('lodash');
 
-var AlgorithmEnum = Object.freeze({BINARY: 0, PIHT: 1});
+var AlgorithmEnum = Object.freeze({
+    BINARY: 0, // Binary Lookup
+    PIHT: 1 // Pipelined Indexing Hash Table AKA Lookup on steroids
+});
 
 GEO_FIELD_MIN = 0;
 GEO_FIELD_MAX = 1;
@@ -82,7 +85,7 @@ var loadPIHT = function() {
 
 
     bucketSize = hss > bucketSize ? hss : bucketSize;
-    for (var i = 0; i <= bucketSize; i++ ) {
+    for (i = 0; i <= bucketSize; i++ ) {
         buckets.push([]);
     }
 
@@ -127,7 +130,6 @@ var loadPIHT = function() {
                 buckets[bucketIndex].push(bentry);
             }
         }
-
         return bentry;
     });
 };
@@ -148,7 +150,7 @@ var lookupPIHT = function(find, ip) {
     var bottom = 0;
     var top = gindex.length-1;
     var mid = 0;
-    do {
+    do { // Binary Search the bucket
         mid = Math.floor((bottom+top)/2);
         if (find > gindex[mid][GEO_FIELD_MAX]) {
             bottom = mid + 1;
@@ -198,7 +200,7 @@ var lookupBinary = function(find) {
     var bottom = 0;
     var top = gindex.length-1;
     var mid = 0;
-    do {
+    do { // Binary Search
         mid = Math.floor((bottom+top)/2);
         if (find > gindex[mid][GEO_FIELD_MAX]) {
             bottom = mid + 1;
